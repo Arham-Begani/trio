@@ -1,0 +1,36 @@
+name: PyPy base and patch comparison
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    name: PyPy ${{ matrix.version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: base
+            ref: 4630d02872c0aa5778ce0afd702c5d532a2ccf60
+          - version: patch
+            ref: f31eed4d931bf2ff62a8df947aca1cc57adb1f78
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ matrix.ref }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: pypy-3.11
+          check-latest: true
+      - name: Verify selected source
+        run: git rev-parse HEAD
+      - name: Run unchanged upstream CI script
+        run: ./ci.sh
+        env:
+          PYRIGHT_PYTHON_IGNORE_WARNINGS: '1'
