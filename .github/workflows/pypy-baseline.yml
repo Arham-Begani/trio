@@ -2,14 +2,22 @@ name: PyPy base and patch comparison
 
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: Runner matching the upstream PyPy job
+        type: choice
+        default: ubuntu-latest
+        options:
+          - ubuntu-latest
+          - macos-latest
 
 permissions:
   contents: read
 
 jobs:
   compare:
-    name: PyPy ${{ matrix.version }}
-    runs-on: ubuntu-latest
+    name: ${{ inputs.runner }} PyPy ${{ matrix.version }}
+    runs-on: ${{ inputs.runner }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
